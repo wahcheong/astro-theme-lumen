@@ -1,0 +1,9 @@
+/*
+ * Lumen — baseline stylesheet used when the consumer has not created their own
+ * Tailwind entry yet. It renders an unstyled-but-correct site and logs a
+ * warning pointing at `src/styles/global.css`.
+ */
+
+@import "tailwindcss";
+@import "./theme.css";
+@import "./prose.css";

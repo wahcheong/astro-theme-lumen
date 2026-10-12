@@ -1,0 +1,149 @@
+---
+import Icon from "./Icon.astro";
+import { pageUrl } from "../utils/posts";
+
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  basePath: string;
+  class?: string;
+}
+
+const { currentPage, totalPages, basePath } = Astro.props;
+const className = Astro.props.class ?? "";
+
+const prev = currentPage > 1 ? pageUrl(basePath, currentPage - 1) : undefined;
+const next = currentPage < totalPages ? pageUrl(basePath, currentPage + 1) : undefined;
+
+const range = (from: number, to: number) =>
+  Array.from({ length: to - from + 1 }, (_, index) => from + index);
+
+/** Numbered neighbours kept either side of the current page. */
+const SIBLINGS = 2;
+
+/**
+ * Page numbers to draw, with `null` standing in for an elided run.
+ *
+ * Two steps, and keeping them apart is the whole point. First collect the
+ * pages that have to appear — the first, the last, and a window around the
+ * current one. Then read the ellipses off the gaps in that list, so a run is
+ * elided only when it really is longer than one page.
+ *
+ * Deciding the ellipses from a separate slot budget is what lets the two drift
+ * apart and elide an adjacent pair: the budget has to be kept in step with the
+ * window arithmetic by hand, and nothing catches it when it is not.
+ */
+function pageNumbers(
+  current: number,
+  total: number,
+  siblings: number
+): (number | null)[] {
+  // The widest the windowed bar ever gets: first, last, the current page,
+  // `siblings` either side, and two ellipses. If the whole list is no wider
+  // than that, draw the whole list.
+  if (total <= siblings * 2 + 5) return range(1, total);
+
+  let start = current - siblings;
+  let end = current + siblings;
+  // Slide the window rather than shorten it, so the numbered run keeps its
+  // length on the first and last pages.
+  if (start < 1) {
+    end += 1 - start;
+    start = 1;
+  }
+  if (end > total) {
+    start -= end - total;
+    end = total;
+  }
+  start = Math.max(start, 1);
+
+  const shown = new Set([1, total]);
+  for (let page = start; page <= end; page += 1) shown.add(page);
+
+  const items: (number | null)[] = [];
+  let previous = 0;
+  for (const page of [...shown].sort((a, b) => a - b)) {
+    // A gap of exactly one means no page is missing, so nothing is elided.
+    if (page - previous > 1) items.push(null);
+    items.push(page);
+    previous = page;
+  }
+  return items;
+}
+
+const pages = pageNumbers(currentPage, totalPages, SIBLINGS);
+
+const navClass =
+  "inline-flex items-center gap-1.5 rounded-full border border-line px-3.5 py-1.5 text-sm transition-colors";
+const pageClass = "grid size-8 place-items-center rounded-full";
+---
+
+{
+  totalPages > 1 && (
+    <nav
+      aria-label="Pagination"
+      class:list={["flex items-center justify-between gap-3", className]}
+    >
+      {prev ? (
+        <a
+          href={prev}
+          rel="prev"
+          class:list={[navClass, "text-muted hover:border-hover-line hover:bg-hover-surface hover:text-hover-ink"]}
+        >
+          <Icon name="chevron-left" size={15} />
+          Newer
+        </a>
+      ) : (
+        <span class:list={[navClass, "cursor-not-allowed text-subtle/50"]} aria-hidden="true">
+          <Icon name="chevron-left" size={15} />
+          Newer
+        </span>
+      )}
+
+      <ol class="flex items-center gap-1 text-sm">
+        {pages.map(page =>
+          page === null ? (
+            // Decorative: the links either side already say which pages exist.
+            <li class="grid size-8 place-items-center text-subtle" aria-hidden="true">
+              …
+            </li>
+          ) : page === currentPage ? (
+            <li>
+              <span
+                aria-current="page"
+                class:list={[pageClass, "bg-accent font-medium text-accent-ink"]}
+              >
+                {page}
+              </span>
+            </li>
+          ) : (
+            <li>
+              <a
+                href={pageUrl(basePath, page)}
+                class:list={[pageClass, "text-muted transition-colors hover:bg-hover-surface hover:text-hover-ink"]}
+              >
+                {page}
+              </a>
+            </li>
+          )
+        )}
+      </ol>
+
+      {next ? (
+        <a
+          href={next}
+          rel="next"
+          class:list={[navClass, "text-muted hover:border-hover-line hover:bg-hover-surface hover:text-hover-ink"]}
+        >
+          Older
+          <Icon name="chevron-right" size={15} />
+        </a>
+      ) : (
+        <span class:list={[navClass, "cursor-not-allowed text-subtle/50"]} aria-hidden="true">
+          Older
+          <Icon name="chevron-right" size={15} />
+        </span>
+      )}
+    </nav>
+  )
+}

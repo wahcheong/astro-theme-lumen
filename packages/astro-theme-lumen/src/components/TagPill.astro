@@ -1,0 +1,40 @@
+---
+import Icon from "./Icon.astro";
+import { slugify } from "../utils/slug";
+
+interface Props {
+  tags: string[];
+  class?: string;
+  /** Cap how many tags are drawn; the rest collapse into a `+n` marker. */
+  limit?: number;
+}
+
+const { tags, limit } = Astro.props;
+const className = Astro.props.class ?? "";
+
+const shown = typeof limit === "number" ? tags.slice(0, limit) : tags;
+const overflow = tags.length - shown.length;
+---
+
+{
+  tags.length > 0 && (
+    <ul class:list={["flex flex-wrap items-center gap-1.5", className]}>
+      {shown.map(tag => (
+        <li>
+          <a
+            href={`/tags/${slugify(tag)}`}
+            class="inline-flex items-center gap-1 rounded-full border border-line px-2 py-0.5 text-xs text-muted transition-colors hover:border-hover-line hover:bg-hover-soft hover:text-hover-ink"
+          >
+            <Icon name="tag" size={11} />
+            {tag}
+          </a>
+        </li>
+      ))}
+      {overflow > 0 && (
+        <li class="text-xs text-subtle" aria-hidden="true">
+          +{overflow}
+        </li>
+      )}
+    </ul>
+  )
+}

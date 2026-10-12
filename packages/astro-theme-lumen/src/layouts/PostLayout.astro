@@ -1,0 +1,141 @@
+---
+import config from "virtual:astro-theme-lumen/config";
+import type { LumenEntry, LumenHeading } from "../utils/posts";
+import { readingTimeMinutes } from "../utils/posts";
+import AdjacentPosts from "../components/AdjacentPosts.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+import Datetime from "../components/Datetime.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import Icon from "../components/Icon.astro";
+import ShareLinks from "../components/ShareLinks.astro";
+import TagPill from "../components/TagPill.astro";
+import Toc from "../components/Toc.astro";
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  post: LumenEntry;
+  headings?: LumenHeading[];
+  older?: LumenEntry;
+  newer?: LumenEntry;
+}
+
+const { post, headings = [], older, newer } = Astro.props;
+
+const title = post.data.title ?? "Untitled";
+const description = post.data.description ?? config.site.description;
+const author = post.data.author ?? config.profile.name ?? config.site.author;
+
+const pubDate = post.data.pubDatetime ? new Date(post.data.pubDatetime) : undefined;
+const modDate = post.data.modDatetime ? new Date(post.data.modDatetime) : undefined;
+
+/** Only claim the post was updated when it moved by more than a day. */
+const showModified =
+  pubDate && modDate && modDate.getTime() - pubDate.getTime() > 86_400_000;
+
+const reading = config.features.showReadingTime
+  ? readingTimeMinutes(post.body)
+  : 0;
+
+const editUrl =
+  config.features.showEditPost && config.features.editPostUrl && post.filePath
+    ? config.features.editPostUrl.replace(/\/?$/, "/") +
+      post.filePath.replace(/^.*?(?=src\/)/, "")
+    : undefined;
+
+const shareUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
+---
+
+<BaseLayout title={title} description={description} ogType="article">
+  <Header />
+
+  <main id="main" class="lumen-shell py-10">
+    <Breadcrumb items={[{ label: "Posts", href: "/posts" }, { label: title }]} />
+
+    <article class="mt-6">
+      <header>
+        <h1
+          class="text-[1.75rem] font-semibold leading-tight tracking-tight text-ink sm:text-4xl"
+        >
+          {title}
+        </h1>
+
+        {
+          post.data.description && (
+            <p class="mt-4 text-[1.125rem] leading-relaxed text-muted">
+              {post.data.description}
+            </p>
+          )
+        }
+
+        <div
+          class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-subtle"
+        >
+          {pubDate && <Datetime date={pubDate} showIcon />}
+          {
+            showModified && modDate && (
+              <Datetime date={modDate} label="Updated" />
+            )
+          }
+          {
+            reading > 0 && (
+              <span class="inline-flex items-center gap-1.5">
+                <Icon name="clock" size={14} />
+                {reading} min read
+              </span>
+            )
+          }
+          <span class="inline-flex items-center gap-1.5">
+            <Icon name="pencil" size={14} />
+            {author}
+          </span>
+          {post.data.canonicalURL && (
+            <a
+              href={post.data.canonicalURL}
+              rel="noopener noreferrer"
+              target="_blank"
+              class="inline-flex items-center gap-1.5 transition-colors hover:text-hover-ink"
+            >
+              <Icon name="link" size={14} />
+              Originally published elsewhere
+            </a>
+          )}
+        </div>
+      </header>
+
+      {config.features.showToc && <Toc headings={headings} class="mt-8" />}
+
+      <div class="lumen-prose mt-9">
+        <slot />
+      </div>
+
+      <footer class="mt-12 space-y-6 border-t border-line pt-7">
+        <TagPill tags={post.data.tags ?? []} />
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <ShareLinks url={shareUrl} title={title} />
+          {
+            editUrl && (
+              <a
+                href={editUrl}
+                rel="noopener noreferrer"
+                target="_blank"
+                class="inline-flex items-center gap-1.5 text-xs text-subtle transition-colors hover:text-hover-ink"
+              >
+                <Icon name="pencil" size={13} />
+                Edit this page
+              </a>
+            )
+          }
+        </div>
+      </footer>
+    </article>
+
+    {
+      config.features.showBackButton && (
+        <AdjacentPosts older={older} newer={newer} />
+      )
+    }
+  </main>
+
+  <Footer />
+</BaseLayout>

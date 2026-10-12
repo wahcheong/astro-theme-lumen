@@ -1,0 +1,64 @@
+---
+import config from "virtual:astro-theme-lumen/config";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import Icon from "../components/Icon.astro";
+import PostCard from "../components/PostCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getSortedPosts, splitPinnedPosts } from "../utils/posts";
+
+const allPosts = await getSortedPosts();
+const { pinned, recent } = await splitPinnedPosts();
+
+const latest = recent.slice(0, config.posts.perIndex);
+const hasMore = recent.length > latest.length;
+
+/*
+ * Pinned posts lead the list, then the chronological run. One list keeps the
+ * card style uniform across both groups; `pinned` survives as a pin icon in the
+ * card's meta row rather than as its own section.
+ */
+const entries = [...pinned, ...latest];
+---
+
+<BaseLayout>
+  <Header />
+
+  <main id="main" class="lumen-shell py-10 sm:py-14">
+    {/* The writing is the page, but a document still needs a heading. */}
+    <h1 class="sr-only">{config.site.title}</h1>
+
+    {
+      entries.length > 0 ? (
+        <ul class="grid gap-4">
+          {entries.map(post => (
+            <li>
+              <PostCard post={post} pinned={Boolean(post.data.pinned)} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="lumen-surface p-6 text-sm text-muted">
+          No posts yet. Create one in{" "}
+          <code class="font-mono text-accent">src/content/posts/</code>.
+        </p>
+      )
+    }
+
+    {
+      hasMore && (
+        <p class="mt-8">
+          <a
+            href="/posts"
+            class="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-hover-ink"
+          >
+            All {allPosts.length} posts
+            <Icon name="arrow-right" size={14} />
+          </a>
+        </p>
+      )
+    }
+  </main>
+
+  <Footer />
+</BaseLayout>

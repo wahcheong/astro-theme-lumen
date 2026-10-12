@@ -1,0 +1,71 @@
+---
+import config from "virtual:astro-theme-lumen/config";
+import type { LumenEntry } from "../utils/posts";
+import { readingTimeMinutes } from "../utils/posts";
+import Datetime from "./Datetime.astro";
+import Icon from "./Icon.astro";
+import TagPill from "./TagPill.astro";
+
+interface Props {
+  post: LumenEntry;
+  /** Marks the card with the pin icon in its meta row. */
+  pinned?: boolean;
+}
+
+const { post, pinned = false } = Astro.props;
+
+const href = `/posts/${post.id}`;
+const description = post.data.description ?? "";
+const reading = config.features.showReadingTime
+  ? readingTimeMinutes(post.body)
+  : 0;
+const tags = post.data.tags ?? [];
+const pubDate = post.data.pubDatetime
+  ? new Date(post.data.pubDatetime)
+  : undefined;
+---
+
+<article
+  class="group relative flex flex-col overflow-hidden rounded-card border border-line bg-surface transition-all duration-200 hover:-translate-y-0.5 hover:border-hover-line hover:shadow-card"
+>
+  <div class="flex flex-1 flex-col p-5">
+    <h3 class="text-[1.25rem] font-semibold tracking-tight text-ink">
+      <a href={href} class="after:absolute after:inset-0 after:content-['']">
+        {post.data.title}
+      </a>
+    </h3>
+
+    {
+      description && (
+        <p class="mt-2 line-clamp-2 text-base leading-relaxed text-muted">
+          {description}
+        </p>
+      )
+    }
+
+    <div class="mt-auto flex flex-wrap items-center gap-x-3 gap-y-2 pt-4 text-sm text-subtle">
+      {
+        pinned && (
+          <span
+            class="inline-flex items-center text-accent"
+            role="img"
+            aria-label="Pinned"
+            title="Pinned"
+          >
+            <Icon name="bookmark" size={13} />
+          </span>
+        )
+      }
+      {pubDate && <Datetime date={pubDate} />}
+      {
+        reading > 0 && (
+          <span class="inline-flex items-center gap-1.5">
+            <Icon name="clock" size={13} />
+            {reading} min read
+          </span>
+        )
+      }
+      {tags.length > 0 && <TagPill tags={tags} limit={2} class="relative z-10" />}
+    </div>
+  </div>
+</article>

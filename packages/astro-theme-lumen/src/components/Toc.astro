@@ -1,0 +1,39 @@
+---
+import type { LumenHeading } from "../utils/posts";
+
+interface Props {
+  headings: LumenHeading[];
+  class?: string;
+}
+
+const { headings } = Astro.props;
+const className = Astro.props.class ?? "";
+
+/** Depth 1 is the post title itself, and depth 5+ is noise in a sidebar. */
+const items = headings.filter(heading => heading.depth >= 2 && heading.depth <= 4);
+---
+
+{
+  items.length > 2 && (
+    <nav aria-labelledby="lumen-toc" class:list={["text-sm", className]}>
+      <p
+        id="lumen-toc"
+        class="mb-3 font-mono text-xs uppercase tracking-widest text-subtle"
+      >
+        On this page
+      </p>
+      <ul class="space-y-1.5 border-s border-line">
+        {items.map(heading => (
+          <li style={`padding-inline-start: ${(heading.depth - 2) * 0.85}rem`}>
+            <a
+              href={`#${heading.slug}`}
+              class="block border-s-2 border-transparent -ms-px ps-3 leading-snug text-muted transition-colors hover:border-hover-ink hover:text-hover-ink"
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [
+    ".astro/types.d.ts",
+    "**/*",
+    "../packages/astro-theme-lumen/index.ts",
+    "../packages/astro-theme-lumen/src/**/*"
+  ],
+  "exclude": ["dist"]
+}

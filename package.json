@@ -1,0 +1,22 @@
+{
+  "name": "astro-theme-lumen-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter lumen-demo dev",
+    "build": "pnpm --filter lumen-demo build",
+    "preview": "pnpm --filter lumen-demo preview",
+    "check": "pnpm --filter lumen-demo check",
+    "theme:pack": "pnpm --filter astro-theme-lumen pack"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.0"
+  }
+}

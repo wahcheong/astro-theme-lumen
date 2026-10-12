@@ -1,0 +1,55 @@
+---
+import config from "virtual:astro-theme-lumen/config";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import Pagination from "../../components/Pagination.astro";
+import PostCard from "../../components/PostCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getSortedPosts, paginate } from "../../utils/posts";
+
+const posts = await getSortedPosts();
+const pages = paginate(posts, config.posts.perPage);
+const entries = pages[0] ?? [];
+---
+
+<BaseLayout
+  title="Posts"
+  description={`Every post on ${config.site.title}.`}
+>
+  <Header />
+
+  <main id="main" class="lumen-shell py-10 sm:py-14">
+    <header class="mb-8">
+      <h1 class="text-[1.75rem] font-semibold tracking-tight text-ink">Posts</h1>
+      <p class="mt-2 text-muted">
+        {posts.length}
+        {posts.length === 1 ? " entry" : " entries"} so far.
+      </p>
+    </header>
+
+    {
+      entries.length > 0 ? (
+        <ul class="grid gap-4">
+          {entries.map(post => (
+            <li>
+              <PostCard post={post} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="lumen-surface p-6 text-sm text-muted">
+          Nothing published yet.
+        </p>
+      )
+    }
+
+    <Pagination
+      currentPage={1}
+      totalPages={pages.length}
+      basePath="/posts"
+      class="mt-12"
+    />
+  </main>
+
+  <Footer />
+</BaseLayout>

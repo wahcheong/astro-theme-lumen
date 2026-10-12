@@ -1,0 +1,66 @@
+---
+import type { GetStaticPaths } from "astro";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import PostCard from "../../components/PostCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { slugify } from "../../utils/slug";
+import { getPostsByTag, getTagCounts } from "../../utils/posts";
+
+export const getStaticPaths = (async () => {
+  const counts = await getTagCounts();
+
+  return [...counts.keys()].map(tag => ({
+    params: { tag: slugify(tag) },
+    props: { tag },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  tag: string;
+}
+
+const { tag } = Astro.props;
+const posts = await getPostsByTag(tag);
+---
+
+<BaseLayout
+  title={`Tag: ${tag}`}
+  description={`Posts tagged “${tag}”.`}
+>
+  <Header />
+
+  <main id="main" class="lumen-shell py-10 sm:py-14">
+    <header class="mb-8">
+      <p class="font-mono text-xs uppercase tracking-widest text-subtle">
+        Tag
+      </p>
+      <h1 class="mt-2 text-[1.75rem] font-semibold tracking-tight text-ink">{tag}</h1>
+      <p class="mt-2 text-muted">
+        {posts.length}
+        {posts.length === 1 ? " post" : " posts"}
+      </p>
+    </header>
+
+    <ul class="grid gap-4 sm:grid-cols-2">
+      {
+        posts.map(post => (
+          <li>
+            <PostCard post={post} />
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-12">
+      <a
+        href="/tags"
+        class="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-hover-ink"
+      >
+        All tags
+      </a>
+    </p>
+  </main>
+
+  <Footer />
+</BaseLayout>

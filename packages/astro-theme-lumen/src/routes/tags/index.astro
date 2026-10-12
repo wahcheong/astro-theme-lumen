@@ -1,0 +1,60 @@
+---
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import Icon from "../../components/Icon.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { slugify } from "../../utils/slug";
+import { getTagCounts } from "../../utils/posts";
+
+const counts = await getTagCounts();
+const tags = [...counts.entries()];
+const max = Math.max(1, ...tags.map(([, count]) => count));
+---
+
+<BaseLayout title="Tags" description="Every topic covered on this site.">
+  <Header />
+
+  <main id="main" class="lumen-shell py-10 sm:py-14">
+    <header class="mb-8">
+      <h1 class="text-[1.75rem] font-semibold tracking-tight text-ink">Tags</h1>
+      <p class="mt-2 text-muted">
+        {tags.length}
+        {tags.length === 1 ? " topic" : " topics"}
+      </p>
+    </header>
+
+    {
+      tags.length > 0 ? (
+        <ul class="grid gap-2 sm:grid-cols-2">
+          {tags.map(([tag, count]) => (
+            <li>
+              <a
+                href={`/tags/${slugify(tag)}`}
+                class="group flex items-center gap-3 rounded-card border border-line bg-surface px-4 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-hover-line hover:shadow-card"
+              >
+                <Icon
+                  name="tag"
+                  size={15}
+                  class="shrink-0 text-subtle transition-colors group-hover:text-hover-ink"
+                />
+                <span class="min-w-0 flex-1 truncate font-medium text-ink transition-colors group-hover:text-hover-ink">
+                  {tag}
+                </span>
+                <span
+                  class="h-1.5 shrink-0 rounded-full bg-accent/70"
+                  style={`width: ${Math.max(6, (count / max) * 44)}px`}
+                  aria-hidden="true"
+                />
+                <span class="shrink-0 font-mono text-xs text-subtle">{count}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="lumen-surface p-6 text-sm text-muted">No tags yet.</p>
+      )
+    }
+  </main>
+
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,38 @@
+---
+import config from "virtual:astro-theme-lumen/config";
+import Socials from "./Socials.astro";
+
+const year = new Intl.DateTimeFormat(config.site.lang, {
+  timeZone: config.site.timezone,
+  year: "numeric",
+}).format(new Date());
+
+const author = config.profile.name || config.site.author;
+---
+
+{
+  config.features.showFooter && (
+    <footer class="mt-12">
+      {/* The rule sits inside the shell, so it ends where the content column
+          ends rather than running to the edges of the viewport. */}
+      <div class="lumen-shell">
+        <div class="flex flex-col items-center gap-4 border-t border-line py-4 text-sm text-muted sm:flex-row sm:justify-between">
+          <p class="text-center sm:text-start">
+            &copy; {year} {author}
+            <span class="mx-1.5 text-subtle">·</span>
+            <a
+              href="https://github.com/wahcheong/astro-theme-lumen"
+              rel="noopener noreferrer"
+              target="_blank"
+              class="italic transition-colors hover:text-hover-ink"
+            >
+              Lumen
+            </a>
+          </p>
+
+          <Socials compact />
+        </div>
+      </div>
+    </footer>
+  )
+}

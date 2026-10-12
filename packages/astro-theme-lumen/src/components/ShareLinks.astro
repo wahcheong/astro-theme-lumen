@@ -1,0 +1,51 @@
+---
+import config from "virtual:astro-theme-lumen/config";
+import Icon from "./Icon.astro";
+
+interface Props {
+  url: string;
+  title: string;
+  class?: string;
+}
+
+const { url, title } = Astro.props;
+const className = Astro.props.class ?? "";
+
+const encoded = encodeURIComponent(url);
+const links = config.shareLinks
+  .filter(link => link.name !== "mail")
+  .map(link => ({ ...link, href: `${link.url}${encoded}` }));
+
+const mailLink = config.shareLinks.find(link => link.name === "mail");
+const mailHref = mailLink
+  ? `${mailLink.url}${encodeURIComponent(`${title} — ${url}`)}`
+  : `mailto:?body=${encoded}`;
+---
+
+{
+  config.features.showShareLinks && config.shareLinks.length > 0 && (
+    <div class:list={["flex flex-wrap items-center gap-2", className]}>
+      <span class="text-xs text-subtle">Share</span>
+      {links.map(link => (
+        <a
+          href={link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Share on ${link.label ?? link.name}`}
+          title={`Share on ${link.label ?? link.name}`}
+          class="grid size-8 place-items-center rounded-full border border-line text-muted transition-colors hover:border-hover-line hover:bg-hover-soft hover:text-hover-ink"
+        >
+          <Icon name={link.name} size={14} />
+        </a>
+      ))}
+      <a
+        href={mailHref}
+        aria-label="Share by email"
+        title="Share by email"
+        class="grid size-8 place-items-center rounded-full border border-line text-muted transition-colors hover:border-hover-line hover:bg-hover-soft hover:text-hover-ink"
+      >
+        <Icon name="mail" size={14} />
+      </a>
+    </div>
+  )
+}

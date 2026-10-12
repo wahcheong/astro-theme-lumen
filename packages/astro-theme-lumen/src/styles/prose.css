@@ -1,0 +1,300 @@
+/*
+ * Lumen — long-form reading styles.
+ *
+ * Applied by wrapping rendered Markdown in `.lumen-prose`. Written as plain
+ * CSS on purpose: it keeps the theme free of a typography plugin dependency
+ * and gives the reading experience one place to evolve.
+ */
+
+.lumen-prose {
+  color: var(--lumen-ink);
+  font-size: 1rem;
+  line-height: 1.75;
+  text-wrap: pretty;
+  /* A bare URL or a long Latin word has no break opportunity, and the column
+     is a fixed 44rem — without this it pushes past the measure instead of
+     wrapping. `break-word` only splits a word that cannot fit on its own
+     line, so ordinary text is unaffected. */
+  overflow-wrap: break-word;
+}
+
+.lumen-prose > * + * {
+  margin-block-start: 1.15em;
+}
+
+/* --- Headings ------------------------------------------------------------ */
+
+.lumen-prose :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--lumen-ink);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.011em;
+  text-wrap: balance;
+  scroll-margin-top: 6rem;
+}
+
+.lumen-prose h1 {
+  font-size: 1.75rem;
+  margin-block-start: 2.4em;
+}
+
+.lumen-prose h2 {
+  font-size: 1.375rem;
+  margin-block-start: 2.2em;
+  padding-block-end: 0.3em;
+  border-block-end: 1px solid var(--lumen-line);
+}
+
+.lumen-prose h3 {
+  font-size: 1.25rem;
+  margin-block-start: 1.9em;
+}
+
+.lumen-prose h4 {
+  font-size: 1.125rem;
+  margin-block-start: 1.7em;
+}
+
+.lumen-prose :is(h5, h6) {
+  font-size: 1rem;
+  margin-block-start: 1.6em;
+  color: var(--lumen-muted);
+}
+
+/* Anchor links injected by the table-of-contents plugin. */
+.lumen-prose :is(h2, h3, h4) > a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.lumen-prose :is(h2, h3, h4):hover > a::after {
+  content: "#";
+  margin-inline-start: 0.4em;
+  color: var(--lumen-subtle);
+  font-weight: 400;
+}
+
+/* --- Body text ----------------------------------------------------------- */
+
+/*
+ * Links carry a dashed hairline instead of a solid rule. In a greyscale palette
+ * the underline is the only affordance a link has left, and a dashed one reads
+ * as an annotation rather than a hard rule. The colour sits a little stronger
+ * than a solid line would need, because the gaps give away weight. Hover swaps
+ * it for an inverted block — the same black-on-white exchange the active nav
+ * item uses.
+ */
+.lumen-prose a {
+  color: var(--lumen-accent);
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in oklab, var(--lumen-accent) 55%, transparent);
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    text-decoration-color 150ms ease;
+}
+
+.lumen-prose a:hover {
+  background-color: var(--lumen-accent);
+  color: var(--lumen-accent-ink);
+  text-decoration-color: transparent;
+}
+
+.lumen-prose strong {
+  font-weight: 600;
+  color: var(--lumen-ink);
+}
+
+.lumen-prose em {
+  font-style: italic;
+}
+
+.lumen-prose :is(del, s) {
+  color: var(--lumen-subtle);
+}
+
+.lumen-prose mark {
+  background-color: var(--lumen-accent-soft);
+  color: var(--lumen-ink);
+  padding-inline: 0.2em;
+  border-radius: 3px;
+}
+
+.lumen-prose :is(sup, sub) {
+  font-size: 0.75em;
+}
+
+.lumen-prose hr {
+  border: 0;
+  border-top: 1px solid var(--lumen-line);
+  margin-block: 2.5em;
+}
+
+/* --- Lists --------------------------------------------------------------- */
+
+.lumen-prose :is(ul, ol) {
+  padding-inline-start: 1.4em;
+}
+
+.lumen-prose ul {
+  list-style-type: disc;
+}
+
+.lumen-prose ol {
+  list-style-type: decimal;
+}
+
+.lumen-prose li::marker {
+  color: var(--lumen-subtle);
+}
+
+.lumen-prose li + li {
+  margin-block-start: 0.4em;
+}
+
+.lumen-prose li > :is(ul, ol) {
+  margin-block-start: 0.4em;
+}
+
+/* Task lists emitted by GFM. */
+.lumen-prose li:has(> input[type="checkbox"]) {
+  list-style: none;
+  margin-inline-start: -1.4em;
+}
+
+.lumen-prose input[type="checkbox"] {
+  margin-inline-end: 0.5em;
+  accent-color: var(--lumen-accent);
+}
+
+/* --- Quotes -------------------------------------------------------------- */
+
+.lumen-prose blockquote {
+  border-inline-start: 3px solid var(--lumen-accent);
+  padding-inline-start: 1.1em;
+  color: var(--lumen-muted);
+  font-style: normal;
+}
+
+.lumen-prose blockquote > * + * {
+  margin-block-start: 0.9em;
+}
+
+.lumen-prose blockquote cite {
+  display: block;
+  margin-block-start: 0.7em;
+  font-size: 0.9em;
+  font-style: normal;
+  color: var(--lumen-subtle);
+}
+
+/* --- Code ---------------------------------------------------------------- */
+
+.lumen-prose code {
+  font-family: var(--lumen-font-mono);
+  font-size: 0.875em;
+  background-color: var(--lumen-accent-soft);
+  color: var(--lumen-ink);
+  padding: 0.15em 0.4em;
+  border-radius: 5px;
+  word-break: break-word;
+}
+
+.lumen-prose pre {
+  font-family: var(--lumen-font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--lumen-line);
+  border-radius: var(--radius-card);
+  background-color: var(--lumen-surface);
+  tab-size: 2;
+}
+
+.lumen-prose pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Shiki emits both themes as custom properties; `defaultColor: false` means
+   no inline colour is written, so these rules are what actually paint the
+   block. The light pair must be applied explicitly — without it the code would
+   inherit the surrounding text colour. */
+.lumen-prose .astro-code,
+.lumen-prose .astro-code span {
+  color: var(--shiki-light) !important;
+  background-color: var(--shiki-light-bg) !important;
+  font-style: var(--shiki-light-font-style) !important;
+  font-weight: var(--shiki-light-font-weight) !important;
+  text-decoration: var(--shiki-light-text-decoration) !important;
+}
+
+.dark .lumen-prose .astro-code,
+.dark .lumen-prose .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* --- Tables -------------------------------------------------------------- */
+
+.lumen-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  display: block;
+  overflow-x: auto;
+}
+
+.lumen-prose :is(th, td) {
+  border: 1px solid var(--lumen-line);
+  padding: 0.55em 0.8em;
+  text-align: start;
+  vertical-align: top;
+}
+
+.lumen-prose thead th {
+  background-color: var(--lumen-elevated);
+  font-weight: 600;
+}
+
+/* --- Media --------------------------------------------------------------- */
+
+.lumen-prose img,
+.lumen-prose video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--lumen-line);
+}
+
+.lumen-prose figure {
+  margin-inline: 0;
+}
+
+.lumen-prose figcaption {
+  margin-block-start: 0.6em;
+  font-size: 0.875rem;
+  color: var(--lumen-subtle);
+  text-align: center;
+}
+
+/* --- Footnotes ----------------------------------------------------------- */
+
+.lumen-prose .footnotes {
+  margin-block-start: 3em;
+  padding-block-start: 1.5em;
+  border-block-start: 1px solid var(--lumen-line);
+  font-size: 0.875rem;
+  color: var(--lumen-muted);
+}

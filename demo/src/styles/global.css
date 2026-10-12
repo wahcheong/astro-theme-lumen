@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@import "astro-theme-lumen/styles/theme.css";
+@import "astro-theme-lumen/styles/prose.css";
+
+/* The demo's own content, so Tailwind picks up classes used in Markdown. */
+@source "../content";
+
+/* Hover states are not overridden here, so the demo uses the theme's own
+   neutral hover tokens. Restyle them by setting `--lumen-hover-ink`,
+   `--lumen-hover-surface`, `--lumen-hover-line` and `--lumen-hover-soft`
+   in `:root` and `.dark`. */

@@ -1,0 +1,67 @@
+---
+import "virtual:astro-theme-lumen/styles";
+import config from "virtual:astro-theme-lumen/config";
+import { THEME_INIT_SCRIPT } from "../utils/theme-script";
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogType?: "website" | "article";
+  /** Rendered into `<head>` after the defaults. */
+  head?: unknown;
+}
+
+const { title, description, ogType = "website" } = Astro.props;
+
+const siteName = config.site.title;
+const pageTitle = title ? `${title} | ${siteName}` : siteName;
+const pageDescription = description ?? config.site.description;
+
+const origin = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(Astro.url.pathname, origin).href;
+const ogImage = new URL(config.site.ogImage, origin).href;
+---
+
+<!doctype html>
+<html lang={config.site.lang} dir={config.site.dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={siteName}
+      href={new URL("/rss.xml", origin).href}
+    />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+
+    <script is:inline set:html={THEME_INIT_SCRIPT} />
+    <slot name="head" />
+  </head>
+
+  <body class="min-h-dvh bg-canvas text-ink">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:shadow-lift"
+    >
+      Skip to content
+    </a>
+    <slot />
+  </body>
+</html>

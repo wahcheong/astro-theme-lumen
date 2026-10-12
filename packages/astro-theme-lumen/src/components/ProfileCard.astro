@@ -1,0 +1,83 @@
+---
+import config from "virtual:astro-theme-lumen/config";
+import Icon from "./Icon.astro";
+import Socials from "./Socials.astro";
+
+/**
+ * Compact author card.
+ *
+ * The theme leads with writing rather than with a personal profile, so this
+ * lives on the about page instead of the homepage. Set `profile.enabled` to
+ * `false` in `lumen.config.ts` to drop it entirely.
+ */
+
+const { profile } = config;
+
+const hasProfile = Boolean(
+  profile.enabled && (profile.name || profile.tagline || profile.bio)
+);
+
+const hasMeta = Boolean(profile.location || profile.now || profile.resume);
+---
+
+{
+  hasProfile && (
+    <section class="lumen-surface flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:p-6">
+      {profile.avatar && (
+        <img
+          src={profile.avatar}
+          alt={profile.name}
+          width="56"
+          height="56"
+          loading="eager"
+          decoding="async"
+          class="size-14 shrink-0 rounded-full border border-line object-cover"
+        />
+      )}
+
+      <div class="min-w-0 flex-1">
+        {profile.name && (
+          <p class="font-medium tracking-tight text-ink">{profile.name}</p>
+        )}
+
+        {profile.tagline && (
+          <p class="mt-0.5 text-sm text-accent">{profile.tagline}</p>
+        )}
+
+        {profile.bio && (
+          <p class="mt-2 text-sm leading-relaxed text-muted">{profile.bio}</p>
+        )}
+
+        {
+          hasMeta && (
+            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-subtle">
+              {profile.location && (
+                <span class="inline-flex items-center gap-1.5">
+                  <Icon name="pin" size={13} />
+                  {profile.location}
+                </span>
+              )}
+              {profile.now && (
+                <span class="inline-flex items-center gap-1.5">
+                  <Icon name="zap" size={13} />
+                  {profile.now}
+                </span>
+              )}
+              {profile.resume && (
+                <a
+                  href={profile.resume}
+                  class="inline-flex items-center gap-1.5 text-accent transition-colors hover:text-hover-ink"
+                >
+                  <Icon name="doc" size={13} />
+                  Résumé
+                </a>
+              )}
+            </div>
+          )
+        }
+
+        <Socials class="mt-3 -ms-2" />
+      </div>
+    </section>
+  )
+}

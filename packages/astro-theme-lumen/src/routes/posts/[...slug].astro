@@ -1,0 +1,28 @@
+---
+import type { GetStaticPaths } from "astro";
+import PostLayout from "../../layouts/PostLayout.astro";
+import type { LumenEntry } from "../../utils/posts";
+import { getAdjacentPosts, getSortedPosts, renderEntry } from "../../utils/posts";
+
+export const getStaticPaths = (async () => {
+  const posts = await getSortedPosts();
+
+  return posts.map(post => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  post: LumenEntry;
+}
+
+const { post } = Astro.props;
+
+const { Content, headings } = await renderEntry(post);
+const { older, newer } = await getAdjacentPosts(post);
+---
+
+<PostLayout post={post} headings={headings ?? []} older={older} newer={newer}>
+  <Content />
+</PostLayout>

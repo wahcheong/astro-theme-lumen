@@ -1,0 +1,77 @@
+---
+import config from "virtual:astro-theme-lumen/config";
+import Icon from "./Icon.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+
+const path = Astro.url.pathname;
+
+/** `/posts` stays active on `/posts/anything`, but `/` only matches itself. */
+function isActive(href: string): boolean {
+  if (href === "/") return path === "/";
+  const clean = href.endsWith("/") ? href.slice(0, -1) : href;
+  return path === clean || path.startsWith(`${clean}/`);
+}
+---
+
+{/*
+  The rule lives on the inner row rather than on <header>: that way it spans the
+  content column and lines up with the cards below, instead of bleeding edge to
+  edge. The background stays on <header> so the sticky blur still covers the
+  full width.
+*/}
+<header class="sticky top-0 z-40 bg-canvas/80 backdrop-blur-md">
+  <div class="lumen-shell">
+    <div
+      class="flex h-16 items-center justify-between gap-3 border-b border-line sm:gap-6"
+    >
+      <a
+        href="/"
+        class="shrink-0 text-[1.375rem] font-semibold italic tracking-tight text-ink transition-colors hover:text-hover-ink"
+      >
+        {config.site.title}
+      </a>
+
+      <nav aria-label="Main" class="-mx-1 min-w-0 flex-1 overflow-x-auto">
+        <ul class="flex items-center gap-0.5 text-base font-semibold">
+          {
+            config.nav.map(item => (
+              <li class="shrink-0">
+                <a
+                  href={item.href}
+                  aria-current={isActive(item.href) ? "page" : undefined}
+                  class:list={[
+                    "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 whitespace-nowrap transition-colors",
+                    isActive(item.href)
+                      ? "text-ink"
+                      : "text-muted hover:bg-hover-surface hover:text-hover-ink",
+                  ]}
+                >
+                  {/*
+                    Decorative. The label always carries the meaning, and
+                    Icon.astro already marks the svg aria-hidden, so the icon
+                    never adds noise for a screen reader.
+                  */}
+                  {item.icon && (
+                    <Icon name={item.icon} size={16} class="shrink-0" />
+                  )}
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="flex shrink-0 items-center gap-1">
+        <a
+          href="/rss.xml"
+          class="grid size-9 place-items-center rounded-full text-muted transition-colors hover:bg-hover-surface hover:text-hover-ink"
+          aria-label="RSS feed"
+        >
+          <Icon name="rss" size={18} />
+        </a>
+        {config.features.lightAndDarkMode && <ThemeToggle />}
+      </div>
+    </div>
+  </div>
+</header>

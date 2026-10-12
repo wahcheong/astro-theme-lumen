@@ -1,0 +1,27 @@
+---
+import config from "virtual:astro-theme-lumen/config";
+import { formatDate, toDateTimeAttr } from "../utils/date";
+import Icon from "./Icon.astro";
+
+interface Props {
+  date: Date;
+  /** Rendered before the date, e.g. "Updated". */
+  label?: string;
+  showIcon?: boolean;
+  class?: string;
+}
+
+const { date, label, showIcon = false } = Astro.props;
+const className = Astro.props.class ?? "";
+const formatted = formatDate(date, config.site.lang, config.site.timezone);
+---
+
+<time
+  datetime={toDateTimeAttr(date)}
+  title={formatted}
+  class:list={["inline-flex items-center gap-1.5", className]}
+>
+  {showIcon && <Icon name="calendar" size={14} />}
+  {label && <span class="text-subtle">{label}</span>}
+  <span>{formatted}</span>
+</time>

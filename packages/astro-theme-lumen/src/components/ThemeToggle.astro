@@ -1,0 +1,33 @@
+---
+import Icon from "./Icon.astro";
+---
+
+<button
+  type="button"
+  data-lumen-theme-toggle
+  class="grid size-9 place-items-center rounded-full text-muted transition-colors hover:bg-hover-surface hover:text-hover-ink"
+  aria-label="Toggle colour theme"
+  title="Toggle colour theme"
+>
+  <Icon name="sun" size={18} class="hidden dark:block" />
+  <Icon name="moon" size={18} class="block dark:hidden" />
+</button>
+
+<script>
+  import { THEME_STORAGE_KEY } from "../utils/theme-script";
+
+  function apply(dark: boolean) {
+    document.documentElement.classList.toggle("dark", dark);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, dark ? "dark" : "light");
+    } catch {
+      // Private browsing modes can refuse storage; the theme still applies.
+    }
+  }
+
+  for (const button of document.querySelectorAll("[data-lumen-theme-toggle]")) {
+    button.addEventListener("click", () => {
+      apply(!document.documentElement.classList.contains("dark"));
+    });
+  }
+</script>

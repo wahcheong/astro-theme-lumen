@@ -1,0 +1,84 @@
+---
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import Icon from "../components/Icon.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { formatDate } from "../utils/date";
+import config from "virtual:astro-theme-lumen/config";
+import { getPostsByYear, readingTimeMinutes } from "../utils/posts";
+
+const groups = await getPostsByYear();
+const total = groups.reduce((sum, group) => sum + group.posts.length, 0);
+---
+
+<BaseLayout title="Archives" description="Everything published, by year.">
+  <Header />
+
+  <main id="main" class="lumen-shell py-10 sm:py-14">
+    <header class="mb-10">
+      <h1 class="text-[1.75rem] font-semibold tracking-tight text-ink">Archives</h1>
+      <p class="mt-2 text-muted">
+        {total}
+        {total === 1 ? " post" : " posts"} across {groups.length}
+        {groups.length === 1 ? " year" : " years"}.
+      </p>
+    </header>
+
+    {
+      groups.map(group => (
+        <section class="mb-10 last:mb-0">
+          <h2 class="mb-4 flex items-baseline gap-3">
+            <span class="font-mono text-sm font-medium text-accent">
+              {group.year}
+            </span>
+            <span class="h-px flex-1 bg-line" aria-hidden="true" />
+            <span class="font-mono text-xs text-subtle">
+              {group.posts.length}
+            </span>
+          </h2>
+
+          <ul class="space-y-1">
+            {group.posts.map(post => (
+              <li>
+                <a
+                  href={`/posts/${post.id}`}
+                  class="group flex items-baseline gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-hover-surface"
+                >
+                  <span class="w-16 shrink-0 font-mono text-xs text-subtle">
+                    {post.data.pubDatetime
+                      ? formatDate(
+                          new Date(post.data.pubDatetime),
+                          config.site.lang,
+                          config.site.timezone,
+                          { month: "short", day: "numeric" }
+                        )
+                      : ""}
+                  </span>
+                  <span class="min-w-0 flex-1 truncate font-medium text-ink transition-colors group-hover:text-hover-ink">
+                    {post.data.title}
+                  </span>
+                  {config.features.showReadingTime && (
+                    <span class="hidden shrink-0 items-center gap-1 font-mono text-xs text-subtle sm:inline-flex">
+                      <Icon name="clock" size={12} />
+                      {readingTimeMinutes(post.body)}m
+                    </span>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+
+    {
+      groups.length === 0 && (
+        <p class="lumen-surface p-6 text-sm text-muted">
+          Nothing published yet.
+        </p>
+      )
+    }
+  </main>
+
+  <Footer />
+</BaseLayout>

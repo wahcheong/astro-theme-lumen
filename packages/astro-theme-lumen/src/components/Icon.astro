@@ -1,0 +1,64 @@
+---
+/**
+ * Icon — the theme's single icon entry point.
+ *
+ * Names resolve through `astro-icon` against the Iconify collections the theme
+ * depends on, so adding an icon is a config change rather than a code change.
+ * Icons are still inlined at build time: no runtime request, and `currentColor`
+ * keeps working, which is what lets a nav icon follow its link's active state.
+ *
+ * No icon artwork lives in this package. UI glyphs come from Lucide
+ * (https://lucide.dev, ISC) and brand marks from Simple Icons
+ * (https://simpleicons.org, CC0), both pulled from the `@iconify-json/*` peer
+ * dependencies, which carry their own licence files. What is here are names.
+ */
+import { Icon as AstroIcon } from "astro-icon/components";
+
+interface Props {
+  name: string;
+  class?: string;
+  size?: number | string;
+}
+
+const { name, size = 20 } = Astro.props;
+const className = Astro.props.class ?? "";
+
+/**
+ * Names that are not already a usable Iconify id.
+ *
+ * Lucide has no brand icons, so the social marks come from Simple Icons. The
+ * rest are renames — theme name on the left, current Iconify id on the right.
+ *
+ * This is a convenience, not a whitelist: a name that already carries a
+ * collection prefix (`simple-icons:reddit`, `mdi:pin`) is passed straight
+ * through, and anything else is looked up in Lucide. So a consumer can reach
+ * any icon in any installed set without waiting for the theme to add it.
+ */
+const ALIASES: Record<string, string> = {
+  /*
+   * Lucide renamed its location marker when it added a separate pushpin. The
+   * theme's `pin` means the location one, so it must not fall through to
+   * `lucide:pin` — that is a tack now, and would sit oddly next to a place
+   * name on the profile card.
+   */
+  pin: "lucide:map-pin",
+  doc: "lucide:file",
+  github: "simple-icons:github",
+  x: "simple-icons:x",
+  linkedin: "simple-icons:linkedin",
+  telegram: "simple-icons:telegram",
+  whatsapp: "simple-icons:whatsapp",
+  facebook: "simple-icons:facebook",
+};
+
+const id =
+  ALIASES[name] ?? (name.includes(":") ? name : `lucide:${name}`);
+---
+
+<AstroIcon
+  name={id}
+  size={size}
+  class={className}
+  aria-hidden="true"
+  focusable="false"
+/>
