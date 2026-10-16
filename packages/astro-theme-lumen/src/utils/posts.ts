@@ -1,6 +1,7 @@
 import type { AstroComponentFactory } from "astro/runtime/server/index.js";
 import { getCollection, render } from "astro:content";
 import config from "virtual:astro-theme-lumen/config";
+import { formatYear } from "./date";
 
 /**
  * Structural shape of a content entry.
@@ -153,14 +154,10 @@ export async function getPostsByYear(): Promise<
 > {
   const posts = await getSortedPosts();
   const groups = new Map<string, LumenEntry[]>();
-  const locale = config.site.lang;
   const timeZone = config.site.timezone;
 
   for (const post of posts) {
-    const year = new Intl.DateTimeFormat(locale, {
-      timeZone,
-      year: "numeric",
-    }).format(new Date(publishedAt(post)));
+    const year = formatYear(new Date(publishedAt(post)), timeZone);
     const bucket = groups.get(year);
     if (bucket) bucket.push(post);
     else groups.set(year, [post]);

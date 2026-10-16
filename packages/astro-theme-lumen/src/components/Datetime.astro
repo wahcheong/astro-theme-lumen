@@ -13,7 +13,7 @@ interface Props {
 
 const { date, label, showIcon = false } = Astro.props;
 const className = Astro.props.class ?? "";
-const formatted = formatDate(date, config.site.lang, config.site.timezone);
+const formatted = formatDate(date, config.site.timezone);
 ---
 
 <time

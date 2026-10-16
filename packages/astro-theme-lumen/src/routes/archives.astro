@@ -44,13 +44,11 @@ const total = groups.reduce((sum, group) => sum + group.posts.length, 0);
                   href={`/posts/${post.id}`}
                   class="group flex items-baseline gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-hover-surface"
                 >
-                  <span class="w-16 shrink-0 font-mono text-xs text-subtle">
+                  <span class="w-24 shrink-0 font-mono text-xs text-subtle">
                     {post.data.pubDatetime
                       ? formatDate(
                           new Date(post.data.pubDatetime),
-                          config.site.lang,
-                          config.site.timezone,
-                          { month: "short", day: "numeric" }
+                          config.site.timezone
                         )
                       : ""}
                   </span>
