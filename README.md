@@ -9,10 +9,6 @@ Lumen is built for reading, and costs almost nothing to load.
 | --- | --- |
 | ![Lumen homepage, light](docs/home-light.png) | ![Lumen homepage, dark](docs/home-dark.png) |
 
-![Lumen post page in dark mode](docs/post-dark.png)
-
-![The author card on the about page](docs/about-light.png)
-
 ## Layout
 
 ```
