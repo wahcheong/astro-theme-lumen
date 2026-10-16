@@ -58,7 +58,7 @@ export const DEFAULT_CONFIG: ResolvedLumenConfig = {
     { name: "mail", url: "mailto:?body=" },
   ],
   nav: [
-    { label: "Posts", href: "/posts", icon: "notebook-text" },
+    { label: "Posts", href: "/posts", icon: "book-open" },
     { label: "Tags", href: "/tags", icon: "tag" },
     { label: "Archives", href: "/archives", icon: "calendar" },
     { label: "About", href: "/about", icon: "anchor" },
