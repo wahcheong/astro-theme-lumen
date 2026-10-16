@@ -2,7 +2,6 @@ import type {
   LumenFeatures,
   LumenNavItem,
   LumenPostsConfig,
-  LumenProfileConfig,
   LumenSiteConfig,
   LumenUserConfig,
   ResolvedLumenConfig,
@@ -19,16 +18,6 @@ export const DEFAULT_CONFIG: ResolvedLumenConfig = {
     dir: "ltr",
     timezone: "UTC",
     ogImage: "default-og.jpg",
-  },
-  profile: {
-    name: "Anonymous",
-    tagline: "",
-    bio: "",
-    avatar: "",
-    location: "",
-    now: "",
-    resume: "",
-    enabled: true,
   },
   posts: {
     perPage: 6,
@@ -89,13 +78,6 @@ export function defineLumenConfig(config: LumenUserConfig): LumenUserConfig {
 export function resolveLumenConfig(user: LumenUserConfig): ResolvedLumenConfig {
   const site: LumenSiteConfig = { ...DEFAULT_CONFIG.site, ...(user.site ?? {}) };
 
-  const profile: LumenProfileConfig = {
-    ...DEFAULT_CONFIG.profile,
-    // The author is a sensible default for the profile name.
-    name: site.author,
-    ...(user.profile ?? {}),
-  };
-
   const posts: LumenPostsConfig = {
     ...DEFAULT_CONFIG.posts,
     ...(user.posts ?? {}),
@@ -110,7 +92,6 @@ export function resolveLumenConfig(user: LumenUserConfig): ResolvedLumenConfig {
 
   return {
     site,
-    profile,
     posts,
     features,
     socials: user.socials ?? DEFAULT_CONFIG.socials,

@@ -36,10 +36,8 @@ const className = Astro.props.class ?? "";
  */
 const ALIASES: Record<string, string> = {
   /*
-   * Lucide renamed its location marker when it added a separate pushpin. The
-   * theme's `pin` means the location one, so it must not fall through to
-   * `lucide:pin` — that is a tack now, and would sit oddly next to a place
-   * name on the profile card.
+   * Lucide renamed its location marker when it added a separate pushpin, so
+   * `lucide:pin` is a tack now. `pin` here still means the location one.
    */
   pin: "lucide:map-pin",
   doc: "lucide:file",

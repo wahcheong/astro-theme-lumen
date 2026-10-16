@@ -32,7 +32,7 @@ export interface LumenSiteConfig {
   ogImage: string;
 }
 
-/** A single social or contact link rendered in the profile and footer. */
+/** A single social or contact link rendered in the footer. */
 export interface LumenLink {
   /** Stable identifier; decides which built-in icon is drawn. */
   name: string;
@@ -53,31 +53,6 @@ export interface LumenNavItem {
    * entry. The icon is decorative — the label is always rendered.
    */
   icon?: string;
-}
-
-/**
- * Author details.
- *
- * Lumen leads with writing rather than with a personal profile, so this block
- * renders on the about page — never on the homepage.
- */
-export interface LumenProfileConfig {
-  /** Display name. Falls back to `site.author`. */
-  name: string;
-  /** One-line role or positioning statement. */
-  tagline: string;
-  /** Longer introduction, rendered on the about page. */
-  bio: string;
-  /** Avatar image living in `public/`, relative to the site root. */
-  avatar: string;
-  /** Free-form location string, e.g. `Shanghai, China`. */
-  location: string;
-  /** What you are working on right now. */
-  now: string;
-  /** Optional link to a résumé or CV (in `public/` or absolute). */
-  resume: string;
-  /** Render the author card at the top of the about page. */
-  enabled: boolean;
 }
 
 /** Pagination and content-listing behaviour. */
@@ -125,7 +100,6 @@ export interface LumenFeatures {
  */
 export interface LumenUserConfig {
   site: LumenSiteConfig;
-  profile?: Partial<LumenProfileConfig>;
   posts?: Partial<LumenPostsConfig>;
   features?: Partial<LumenFeatures>;
   socials?: LumenLink[];
@@ -136,7 +110,6 @@ export interface LumenUserConfig {
 /** Configuration with every default applied. */
 export interface ResolvedLumenConfig {
   site: LumenSiteConfig;
-  profile: LumenProfileConfig;
   posts: LumenPostsConfig;
   features: LumenFeatures;
   socials: LumenLink[];

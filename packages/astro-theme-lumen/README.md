@@ -79,10 +79,6 @@ export default defineLumenConfig({
     lang: "en",
     timezone: "Asia/Shanghai",
   },
-  profile: {
-    tagline: "What you do",
-    bio: "A sentence or two about you.",
-  },
 });
 ```
 
@@ -198,21 +194,6 @@ paginated listings and detail pages unambiguous.
 | `dir` | `"ltr" \| "rtl"` | `"ltr"` | Text direction |
 | `timezone` | `string` | `"UTC"` | IANA zone for every rendered date |
 | `ogImage` | `string` | `"default-og.jpg"` | Social card in `public/` |
-
-### `profile`
-
-Renders the author card at the top of `/about` — never on the homepage.
-
-| Field | Type | Notes |
-| --- | --- | --- |
-| `enabled` | `boolean` | Set `false` to drop the card entirely |
-| `name` | `string` | Defaults to `site.author` |
-| `tagline` | `string` | One-line positioning statement |
-| `bio` | `string` | Longer introduction |
-| `avatar` | `string` | Image in `public/` |
-| `location` | `string` | Free-form |
-| `now` | `string` | What you are working on |
-| `resume` | `string` | Link to a CV |
 
 ### `posts`
 

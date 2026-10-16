@@ -33,19 +33,11 @@ export default defineLumenConfig({
     title: "Your site",
     author: "Your name",
   },
-  profile: {
-    tagline: "What you do",
-    bio: "A sentence or two about you.",
-  },
 });
 ```
 
 > Every field other than `site` is optional. The theme fills in sensible
 > defaults so a minimal config stays readable.
-
-The `profile` block feeds the author card at the top of this page. It is never
-rendered on the homepage — set `profile.enabled` to `false` to drop it
-altogether.
 
 ## Where things live
 

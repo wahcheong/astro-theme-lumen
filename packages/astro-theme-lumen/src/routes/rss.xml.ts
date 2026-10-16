@@ -21,7 +21,7 @@ export async function GET(context: APIContext) {
         : new Date(),
       link: `/posts/${post.id}/`,
       categories: post.data.tags ?? [],
-      author: post.data.author ?? config.profile.name ?? config.site.author,
+      author: post.data.author ?? config.site.author,
     })),
   });
 }

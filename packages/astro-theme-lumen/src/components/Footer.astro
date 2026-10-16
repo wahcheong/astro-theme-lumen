@@ -7,7 +7,7 @@ const year = new Intl.DateTimeFormat(config.site.lang, {
   year: "numeric",
 }).format(new Date());
 
-const author = config.profile.name || config.site.author;
+const author = config.site.author;
 ---
 
 {

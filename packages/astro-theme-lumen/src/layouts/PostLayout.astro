@@ -24,7 +24,7 @@ const { post, headings = [], older, newer } = Astro.props;
 
 const title = post.data.title ?? "Untitled";
 const description = post.data.description ?? config.site.description;
-const author = post.data.author ?? config.profile.name ?? config.site.author;
+const author = post.data.author ?? config.site.author;
 
 const pubDate = post.data.pubDatetime ? new Date(post.data.pubDatetime) : undefined;
 const modDate = post.data.modDatetime ? new Date(post.data.modDatetime) : undefined;

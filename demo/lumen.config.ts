@@ -12,11 +12,6 @@ export default defineLumenConfig({
     timezone: "Asia/Shanghai",
     ogImage: "default-og.jpg",
   },
-  profile: {
-    tagline: "Builder, note-taker, occasional breaker of things.",
-    bio: "I write about the systems I build, the bugs I chase, and the ideas I keep coming back to.",
-    location: "Shanghai, China",
-  },
   posts: {
     perPage: 6,
     perIndex: 4,

@@ -1,7 +1,6 @@
 ---
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
-import ProfileCard from "../components/ProfileCard.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getPage, renderEntry } from "../utils/posts";
 
@@ -20,8 +19,6 @@ const description = page?.data.description;
       <h1 class="text-[1.75rem] font-semibold tracking-tight text-ink">{title}</h1>
 
       {description && <p class="mt-3 text-muted">{description}</p>}
-
-      <ProfileCard class="mt-7" />
 
       <div class="lumen-prose mt-8">
         {
