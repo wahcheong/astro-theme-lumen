@@ -16,7 +16,6 @@ export type {
   LumenLink,
   LumenNavItem,
   LumenPostsConfig,
-  LumenProfileConfig,
   LumenSiteConfig,
   LumenUserConfig,
   ResolvedLumenConfig,
