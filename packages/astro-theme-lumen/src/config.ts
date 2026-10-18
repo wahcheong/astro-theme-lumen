@@ -2,13 +2,14 @@ import type {
   LumenFeatures,
   LumenNavItem,
   LumenPostsConfig,
+  LumenRoutesConfig,
   LumenSiteConfig,
   LumenUserConfig,
   ResolvedLumenConfig,
 } from "./types";
 
 /** Baseline configuration; every field a consumer may omit. */
-export const DEFAULT_CONFIG: ResolvedLumenConfig = {
+export const DEFAULT_CONFIG: Omit<ResolvedLumenConfig, "routes"> = {
   site: {
     url: "https://example.com/",
     title: "Lumen",
@@ -54,11 +55,19 @@ export const DEFAULT_CONFIG: ResolvedLumenConfig = {
   ],
 };
 
-/** Route toggles the integration passes in, used to prune default nav entries. */
+/**
+ * Route toggles the integration passes in.
+ *
+ * Feeds both the nav pruning below and the `routes` block that components read
+ * to decide whether to render a link to an optional route.
+ */
 export interface NavPruning {
   archives?: boolean;
   tags?: boolean;
   about?: boolean;
+  search?: boolean;
+  rss?: boolean;
+  notFound?: boolean;
 }
 
 /**
@@ -75,7 +84,9 @@ export function defineLumenConfig(config: LumenUserConfig): LumenUserConfig {
  * Collection-valued keys (`socials`, `shareLinks`, `nav`) are replaced rather
  * than concatenated, so a consumer can intentionally ship an empty list.
  */
-export function resolveLumenConfig(user: LumenUserConfig): ResolvedLumenConfig {
+export function resolveLumenConfig(
+  user: LumenUserConfig
+): Omit<ResolvedLumenConfig, "routes"> {
   const site: LumenSiteConfig = { ...DEFAULT_CONFIG.site, ...(user.site ?? {}) };
 
   const posts: LumenPostsConfig = {
@@ -100,28 +111,42 @@ export function resolveLumenConfig(user: LumenUserConfig): ResolvedLumenConfig {
   };
 }
 
+/** Default nav entries that only exist while their route is switched on. */
+const NAV_ROUTE_GUARDS: ReadonlyArray<[href: string, option: keyof NavPruning]> = [
+  ["/archives", "archives"],
+  ["/tags", "tags"],
+  ["/about", "about"],
+];
+
 /**
- * Remove default nav entries whose route was switched off in the integration
- * options. Entries the consumer listed explicitly are always kept.
+ * Reconcile the resolved config with the route toggles.
+ *
+ * Two jobs: drop default nav entries whose route was switched off (entries the
+ * consumer listed explicitly are always kept), and attach the flags themselves
+ * so components can hide an affordance that points at a route that is gone.
  */
 export function pruneNav(
-  config: ResolvedLumenConfig,
+  config: Omit<ResolvedLumenConfig, "routes">,
   routes: NavPruning
 ): ResolvedLumenConfig {
-  if (routes.archives === false && routes.tags === false && routes.about === false) {
-    return config;
-  }
+  const flags: LumenRoutesConfig = {
+    tags: routes.tags !== false,
+    archives: routes.archives !== false,
+    about: routes.about !== false,
+    search: routes.search !== false,
+    rss: routes.rss !== false,
+    notFound: routes.notFound !== false,
+  };
 
   const userProvidedNav = config.nav !== DEFAULT_CONFIG.nav;
+  const nav = userProvidedNav
+    ? config.nav
+    : config.nav.filter(
+        item =>
+          !NAV_ROUTE_GUARDS.some(
+            ([href, option]) => routes[option] === false && item.href === href
+          )
+      );
 
-  return {
-    ...config,
-    nav: config.nav.filter(item => {
-      if (userProvidedNav) return true;
-      if (routes.archives === false && item.href === "/archives") return false;
-      if (routes.tags === false && item.href === "/tags") return false;
-      if (routes.about === false && item.href === "/about") return false;
-      return true;
-    }),
-  };
+  return { ...config, nav, routes: flags };
 }

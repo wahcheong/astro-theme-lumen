@@ -159,6 +159,88 @@
 }
 
 @layer components {
+  /* Pagefind ships its own palette. Mapping it onto the theme tokens keeps the
+     widget from arriving as a blue rectangle in a greyscale site. Shared by the
+     search page and the header dialog so both look the same. */
+  .lumen-search {
+    --pagefind-ui-font: var(--lumen-font-sans);
+    --pagefind-ui-primary: var(--lumen-ink);
+    --pagefind-ui-text: var(--lumen-ink);
+    --pagefind-ui-background: var(--lumen-canvas);
+    --pagefind-ui-border: var(--lumen-line);
+    --pagefind-ui-tag: var(--lumen-hover-surface);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 0.625rem;
+    /*
+      Pagefind's defaults are sized for a hero: a 64px field in 21px type.
+      Scaling is the safe lever — the magnifier and Clear button are positioned
+      with the same variable, so overriding the height by hand would knock them
+      out of alignment.
+    */
+    --pagefind-ui-scale: 0.75;
+    /* Vertical rhythm of the result rows, kept as variables so the list can be
+       tightened without touching the override below. */
+    --lumen-result-gap-start: 0.625rem;
+    --lumen-result-gap-end: 0.75rem;
+  }
+
+  /*
+    The overrides below need `!important`: Pagefind's rules are scoped with a
+    Svelte class (`.pagefind-ui__result-title.svelte-xxxx`) and its stylesheet is
+    injected after this one, so specificity alone does not win.
+  */
+
+  /* What you type is input, not a headline. */
+  .lumen-search .pagefind-ui__search-input {
+    font-weight: 400 !important;
+  }
+
+  /* Result headings sit at the theme's card-title size, not Pagefind's 21px. */
+  .lumen-search .pagefind-ui__result-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+  }
+
+  .lumen-search .pagefind-ui__result-excerpt {
+    font-size: 0.875rem !important;
+  }
+
+  .lumen-search .pagefind-ui__message {
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+  }
+
+  /* Scaled down with everything else this would land at 10.5px. */
+  .lumen-search .pagefind-ui__search-clear {
+    font-size: 0.8125rem !important;
+  }
+
+  .lumen-search .pagefind-ui__result {
+    padding-block: var(--lumen-result-gap-start) var(--lumen-result-gap-end) !important;
+  }
+
+  /* Hits are marked with <mark>, which the browser paints yellow. */
+  .lumen-search mark {
+    background-color: var(--lumen-accent-soft);
+    color: inherit;
+    font-weight: 500;
+    border-radius: 0.2em;
+  }
+
+  /*
+    Browsers draw their own focus ring once the field or the dialog takes focus.
+    Chrome skips it here, Safari does not, so it has to be switched off rather
+    than relied upon to be absent. The caret is the focus cue in a panel that
+    autofocuses its only field, so nothing is drawn in its place — a darker
+    border would simply be the black edge this replaces.
+  */
+  .lumen-search .pagefind-ui__search-input:focus,
+  .lumen-search .pagefind-ui__search-input:focus-visible,
+  dialog[data-search-dialog]:focus,
+  dialog[data-search-dialog]:focus-visible {
+    outline: none !important;
+  }
+
   /* Single centred measure shared by every page. 44rem keeps a 16px prose
      line near 88 Latin characters — the long end of comfortable, and about
      41 CJK characters, which is the middle of that script's range. */

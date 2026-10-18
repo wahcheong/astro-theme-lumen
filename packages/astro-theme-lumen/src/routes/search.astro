@@ -1,0 +1,56 @@
+---
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Search" description="Search every post.">
+  <Fragment slot="head">
+    {/*
+      Emitted by Pagefind into `dist/pagefind` after the build, so these two
+      files only exist in a built site — never during `astro dev`. The colour
+      mapping lives in `theme.css` so the header dialog shares it.
+    */}
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  </Fragment>
+
+  <Header />
+
+  <main id="main" class="lumen-shell py-10 sm:py-14">
+    <header class="mb-8">
+      <h1 class="text-[1.75rem] font-semibold tracking-tight text-ink">Search</h1>
+      <p class="mt-2 text-muted">
+        Every post, searched in your browser. Nothing is sent anywhere.
+      </p>
+    </header>
+
+    <div id="lumen-search" class="lumen-search" data-pagefind-ignore>
+    </div>
+
+    <noscript>
+      <p class="mt-8 text-sm text-muted">
+        Search needs JavaScript.{" "}
+        <a href="/posts" class="text-ink underline underline-offset-4">
+          Browse all posts
+        </a>{" "}
+        instead.
+      </p>
+    </noscript>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<script is:inline src="/pagefind/pagefind-ui.js"></script>
+<script is:inline>
+  // The bundle is absent until a build has produced one, so a missing UI is an
+  // expected state in dev rather than an error worth throwing over.
+  if (typeof PagefindUI === "function") {
+    new PagefindUI({
+      element: "#lumen-search",
+      showSubResults: true,
+      showImages: false,
+      resetStyles: false,
+    });
+  }
+</script>

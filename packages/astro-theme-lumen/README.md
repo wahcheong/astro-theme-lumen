@@ -171,6 +171,7 @@ override mechanism.
 | `/tags/[tag]` | `routes/tags/[tag].astro` |
 | `/archives` | `routes/archives.astro` |
 | `/about` | `routes/about.astro` |
+| `/search` | `routes/search.astro` |
 | `/rss.xml` | `routes/rss.xml.ts` |
 | `/404` | `routes/404.astro` |
 
@@ -265,6 +266,7 @@ lumen({
     tags: false,
     archives: false,
     about: false,
+    search: false,
     rss: false,
     notFound: false,
   },
@@ -273,6 +275,32 @@ lumen({
 
 Every route toggle defaults to `true`. Turning one off also removes it from the
 default navigation.
+
+### Search
+
+The header's search icon opens a [Pagefind](https://pagefind.app) overlay, and
+`/search` renders the same UI as a standalone page for direct links. The index is
+written by the `astro:build:done` hook, so nothing is precomputed per request and
+no query leaves the browser.
+
+The UI bundle is fetched the first time the overlay opens, not up front — a page
+that is never searched still ships no script beyond the theme toggle.
+
+Only pages carrying `data-pagefind-body` are indexed. The post layout sets it, so
+tag listings, archives and the search page itself stay out of the results.
+
+Three things worth knowing:
+
+- **It needs a build.** `dist/pagefind` is written after `astro build`, so
+  `astro dev` has no index — the overlay says as much rather than opening an
+  empty box. Run `astro build && astro preview` to try search locally.
+- **CJK search follows `<html lang>`.** Pagefind only segments Chinese, Japanese
+  and Korean when the page is tagged as one of those languages. A site that sets
+  `site.lang: "en"` but also publishes Chinese posts will match Chinese phrases
+  poorly — `集群` finds a page that `分布式` misses.
+- **Pagefind is a build-time binary.** It pulls around 50 MB on the machine that
+  builds the site and adds about 1 MB to the output; the homepage is untouched.
+  `routes: { search: false }` drops both the route and the index.
 
 ### Code highlighting
 

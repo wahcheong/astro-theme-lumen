@@ -49,7 +49,8 @@
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
-    "astro-icon": "^1.2.0"
+    "astro-icon": "^1.2.0",
+    "pagefind": "^1.5.2"
   },
   "peerDependencies": {
     "@iconify-json/lucide": "^1.2.0",

@@ -1,6 +1,7 @@
 ---
 import config from "virtual:astro-theme-lumen/config";
 import Icon from "./Icon.astro";
+import SearchTrigger from "./SearchTrigger.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 
 const path = Astro.url.pathname;
@@ -63,13 +64,16 @@ function isActive(href: string): boolean {
       </nav>
 
       <div class="flex shrink-0 items-center gap-1">
-        <a
-          href="/rss.xml"
-          class="grid size-9 place-items-center rounded-full text-muted transition-colors hover:bg-hover-surface hover:text-hover-ink"
-          aria-label="RSS feed"
-        >
-          <Icon name="rss" size={18} />
-        </a>
+        {config.routes.search && <SearchTrigger />}
+        {config.routes.rss && (
+          <a
+            href="/rss.xml"
+            class="grid size-9 place-items-center rounded-full text-muted transition-colors hover:bg-hover-surface hover:text-hover-ink"
+            aria-label="RSS feed"
+          >
+            <Icon name="rss" size={18} />
+          </a>
+        )}
         {config.features.lightAndDarkMode && <ThemeToggle />}
       </div>
     </div>

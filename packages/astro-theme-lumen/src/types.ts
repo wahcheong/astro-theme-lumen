@@ -107,6 +107,22 @@ export interface LumenUserConfig {
   nav?: LumenNavItem[];
 }
 
+/**
+ * Which optional routes the integration switched on.
+ *
+ * Attached by `pruneNav` rather than by `resolveLumenConfig`, since only the
+ * integration knows the route toggles. Components read it to decide whether an
+ * affordance pointing at one of those routes should render.
+ */
+export interface LumenRoutesConfig {
+  tags: boolean;
+  archives: boolean;
+  about: boolean;
+  search: boolean;
+  rss: boolean;
+  notFound: boolean;
+}
+
 /** Configuration with every default applied. */
 export interface ResolvedLumenConfig {
   site: LumenSiteConfig;
@@ -115,4 +131,5 @@ export interface ResolvedLumenConfig {
   socials: LumenLink[];
   shareLinks: LumenLink[];
   nav: LumenNavItem[];
+  routes: LumenRoutesConfig;
 }

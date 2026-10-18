@@ -15,8 +15,8 @@ paginated index, tags, per-year archives, and RSS.
 
 It is deliberately small:
 
-- **No client framework.** Zero JavaScript islands; the only script on the page
-  is the theme toggle.
+- **No client framework.** No islands; outside the search page, the only script
+  on a page is the theme toggle.
 - **No CMS.** Content lives in Markdown and MDX under `src/content/`.
 - **No plugin to learn.** One config file, `lumen.config.ts`.
 

@@ -1,6 +1,7 @@
 ---
 import "virtual:astro-theme-lumen/styles";
 import config from "virtual:astro-theme-lumen/config";
+import SearchOverlay from "../components/SearchOverlay.astro";
 import { THEME_INIT_SCRIPT } from "../utils/theme-script";
 
 interface Props {
@@ -43,12 +44,16 @@ const ogImage = new URL(config.site.ogImage, origin).href;
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={ogImage} />
 
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title={siteName}
-      href={new URL("/rss.xml", origin).href}
-    />
+    {
+      config.routes.rss && (
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={siteName}
+          href={new URL("/rss.xml", origin).href}
+        />
+      )
+    }
     <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
 
     <script is:inline set:html={THEME_INIT_SCRIPT} />
@@ -63,5 +68,8 @@ const ogImage = new URL(config.site.ogImage, origin).href;
       Skip to content
     </a>
     <slot />
+
+    {/* Outside the header on purpose: see SearchOverlay. */}
+    {config.routes.search && <SearchOverlay />}
   </body>
 </html>

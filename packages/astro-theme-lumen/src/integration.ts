@@ -4,6 +4,10 @@ import { fileURLToPath } from "node:url";
 import type { AstroIntegration } from "astro";
 import type { Plugin } from "vite";
 import icon from "astro-icon";
+// Imported eagerly on purpose. `astro:build:done` runs after Vite's module
+// runner has shut down, so a dynamic import there fails; a static import is
+// already bound by the time the hook fires.
+import { createIndex } from "pagefind";
 import {
   INTEGRATION_NAME,
   RESOLVED_VIRTUAL_CONFIG_ID,
@@ -22,6 +26,8 @@ export interface LumenRouteOptions {
   archives?: boolean;
   /** `/about`, rendered from the `about` entry of the pages collection. */
   about?: boolean;
+  /** `/search`, backed by a Pagefind index written after `astro build`. */
+  search?: boolean;
   /** `/rss.xml`. */
   rss?: boolean;
   /** `/404`. */
@@ -77,6 +83,7 @@ const ROUTES: readonly RouteDefinition[] = [
   { pattern: "/tags/[tag]", entry: "tags/[tag].astro", option: "tags" },
   { pattern: "/archives", entry: "archives.astro", option: "archives" },
   { pattern: "/about", entry: "about.astro", option: "about" },
+  { pattern: "/search", entry: "search.astro", option: "search" },
   { pattern: "/rss.xml", entry: "rss.xml.ts", option: "rss" },
   { pattern: "/404", entry: "404.astro", option: "notFound" },
 ];
@@ -174,6 +181,7 @@ export default function lumen(options: LumenOptions = {}): AstroIntegration {
     tags: true,
     archives: true,
     about: true,
+    search: true,
     rss: true,
     notFound: true,
     ...options.routes,
@@ -279,6 +287,38 @@ export default function lumen(options: LumenOptions = {}): AstroIntegration {
             ``,
           ].join("\n"),
         });
+      },
+
+      "astro:build:done": async ({ dir, logger }) => {
+        if (!routes.search) return;
+
+        const outputDir = fileURLToPath(dir);
+        const { index, errors: createErrors } = await createIndex();
+        if (!index) {
+          logger.error("Pagefind could not start an index.");
+          createErrors.forEach(logger.error);
+          return;
+        }
+
+        const { errors } = await index.addDirectory({
+          path: outputDir,
+        });
+        if (errors.length) {
+          logger.error("Pagefind failed to index the built pages.");
+          errors.forEach(logger.error);
+          return;
+        }
+
+        const { errors: writeErrors } = await index.writeFiles({
+          outputPath: path.join(outputDir, "pagefind"),
+        });
+        if (writeErrors.length) {
+          logger.error("Pagefind failed to write the search index.");
+          writeErrors.forEach(logger.error);
+          return;
+        }
+
+        logger.info("Built the search index.");
       },
     },
   };

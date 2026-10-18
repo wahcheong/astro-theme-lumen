@@ -52,7 +52,12 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).hre
   <main id="main" class="lumen-shell py-10">
     <Breadcrumb items={[{ label: "Posts", href: "/posts" }, { label: title }]} />
 
-    <article class="mt-6">
+    {/*
+      Scopes the Pagefind index to post bodies. Once any page carries this,
+      Pagefind only indexes pages that do — so tag listings, archives and the
+      search page itself stay out of the results.
+    */}
+    <article class="mt-6" data-pagefind-body>
       <header>
         <h1
           class="text-[1.75rem] font-semibold leading-tight tracking-tight text-ink sm:text-4xl"
