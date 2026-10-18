@@ -1,5 +1,7 @@
 ---
 import "virtual:astro-theme-lumen/styles";
+// Empty unless the consumer enabled `math`; carries KaTeX's stylesheet.
+import "virtual:astro-theme-lumen/math";
 import config from "virtual:astro-theme-lumen/config";
 import SearchOverlay from "../components/SearchOverlay.astro";
 import { THEME_INIT_SCRIPT } from "../utils/theme-script";

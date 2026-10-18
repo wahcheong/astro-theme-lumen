@@ -15,6 +15,17 @@ export const VIRTUAL_STYLES_ID = "virtual:astro-theme-lumen/styles";
 /** Rollup/Vite-internal id the styles virtual module resolves to. */
 export const RESOLVED_VIRTUAL_STYLES_ID = "\0" + VIRTUAL_STYLES_ID;
 
+/**
+ * Bare specifier carrying KaTeX's stylesheet.
+ *
+ * Resolves to an empty module unless the consumer switches math on, so sites
+ * without formulas never pay for KaTeX's CSS or fonts.
+ */
+export const VIRTUAL_MATH_ID = "virtual:astro-theme-lumen/math";
+
+/** Rollup/Vite-internal id the math virtual module resolves to. */
+export const RESOLVED_VIRTUAL_MATH_ID = "\0" + VIRTUAL_MATH_ID;
+
 /** Consumer stylesheet probed under the project root, in priority order. */
 export const USER_STYLESHEET_CANDIDATES = [
   "src/styles/global.css",

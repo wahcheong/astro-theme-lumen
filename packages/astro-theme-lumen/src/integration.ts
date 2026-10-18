@@ -8,13 +8,21 @@ import icon from "astro-icon";
 // runner has shut down, so a dynamic import there fails; a static import is
 // already bound by the time the hook fires.
 import { createIndex } from "pagefind";
+// Also static: dynamic imports from integration code go through Vite's
+// module runner, which is closed by the time hooks run.
+import { createRequire } from "node:module";
+import { pathToFileURL } from "node:url";
+import { satteri } from "@astrojs/markdown-satteri";
+import { katexForSatteri } from "./utils/katex";
 import {
   INTEGRATION_NAME,
   RESOLVED_VIRTUAL_CONFIG_ID,
+  RESOLVED_VIRTUAL_MATH_ID,
   RESOLVED_VIRTUAL_STYLES_ID,
   USER_CONFIG_FILE_NAMES,
   USER_STYLESHEET_CANDIDATES,
   VIRTUAL_CONFIG_ID,
+  VIRTUAL_MATH_ID,
   VIRTUAL_STYLES_ID,
 } from "./consts";
 
@@ -51,6 +59,14 @@ export interface LumenOptions {
    * change the colours.
    */
   codeTheme?: { light: string; dark: string } | false;
+  /**
+   * Render `$…$` and `$$…$$` with KaTeX.
+   *
+   * Off by default: KaTeX brings its own fonts, so turning it on trades the
+   * theme's no-webfont property for real formula rendering — the trade is
+   * worth it only on sites that actually write maths.
+   */
+  math?: boolean;
 }
 
 /** Shiki themes the theme installs unless told otherwise. */
@@ -175,6 +191,35 @@ function createVirtualStylesPlugin(
   };
 }
 
+/**
+ * Serve `virtual:astro-theme-lumen/math`.
+ *
+ * KaTeX's stylesheet pulls in its own font faces, so it is imported only when
+ * math is switched on. A site without formulas gets an empty module and never
+ * downloads any of it.
+ */
+function createVirtualMathPlugin(math: boolean): Plugin {
+  return {
+    name: "astro-theme-lumen:virtual-math",
+    enforce: "pre",
+    resolveId(id) {
+      if (id === VIRTUAL_MATH_ID) return RESOLVED_VIRTUAL_MATH_ID;
+      return null;
+    },
+    load(id) {
+      if (id !== RESOLVED_VIRTUAL_MATH_ID) return null;
+      if (!math) return "export {};";
+
+      // Resolved from this package, so it works whatever the consumer's root is.
+      const href = pathToFileURL(
+        createRequire(import.meta.url).resolve("katex/dist/katex.min.css")
+      ).href;
+
+      return `import ${JSON.stringify(href)};`;
+    },
+  };
+}
+
 /** The `astro-theme-lumen` integration. */
 export default function lumen(options: LumenOptions = {}): AstroIntegration {
   const routes: Required<LumenRouteOptions> = {
@@ -190,7 +235,7 @@ export default function lumen(options: LumenOptions = {}): AstroIntegration {
   return {
     name: INTEGRATION_NAME,
     hooks: {
-      "astro:config:setup": ({
+      "astro:config:setup": async ({
         config,
         updateConfig,
         injectRoute,
@@ -232,6 +277,19 @@ export default function lumen(options: LumenOptions = {}): AstroIntegration {
         // Dual Shiki themes are what let `prose.css` swap code colours with the
         // colour scheme; a single theme bakes its background in as an inline
         // style that the stylesheet cannot override.
+        if (options.math) {
+          // Astro 7 runs Sätteri by default; the old `remarkPlugins` /
+          // `rehypePlugins` keys only apply to `@astrojs/markdown-remark`.
+          updateConfig({
+            markdown: {
+              processor: satteri({
+                features: { math: true },
+                hastPlugins: [katexForSatteri],
+              }),
+            },
+          });
+        }
+
         if (options.codeTheme !== false) {
           const codeTheme = options.codeTheme ?? DEFAULT_CODE_THEME;
           updateConfig({
@@ -249,6 +307,7 @@ export default function lumen(options: LumenOptions = {}): AstroIntegration {
             plugins: [
               createVirtualConfigPlugin(configModulePath, userConfigPath, routes),
               createVirtualStylesPlugin(stylesheetPath, fallbackStylesheet),
+              createVirtualMathPlugin(options.math === true),
             ],
           },
         });
@@ -284,6 +343,8 @@ export default function lumen(options: LumenOptions = {}): AstroIntegration {
             `}`,
             ``,
             `declare module ${JSON.stringify(VIRTUAL_STYLES_ID)};`,
+            ``,
+            `declare module ${JSON.stringify(VIRTUAL_MATH_ID)};`,
             ``,
           ].join("\n"),
         });

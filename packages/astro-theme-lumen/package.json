@@ -48,9 +48,12 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.4",
     "@astrojs/rss": "^4.0.19",
     "astro-icon": "^1.2.0",
-    "pagefind": "^1.5.2"
+    "katex": "^0.19.0",
+    "pagefind": "^1.5.2",
+    "satteri": "^0.10.5"
   },
   "peerDependencies": {
     "@iconify-json/lucide": "^1.2.0",

@@ -262,6 +262,7 @@ lumen({
   configFile: "config/lumen.ts", // default: lumen.config.* at the project root
   stylesheet: "src/styles/site.css", // default: probed from src/styles/global.css
   codeTheme: { light: "github-light", dark: "github-dark" }, // or `false`
+  math: true, // default: false
   routes: {
     tags: false,
     archives: false,
@@ -301,6 +302,36 @@ Three things worth knowing:
 - **Pagefind is a build-time binary.** It pulls around 50 MB on the machine that
   builds the site and adds about 1 MB to the output; the homepage is untouched.
   `routes: { search: false }` drops both the route and the index.
+
+### Math
+
+`math: true` renders `$…$` and `$$…$$` with [KaTeX](https://katex.org), at build
+time. Nothing runs in the browser to draw a formula; only a stylesheet is added.
+
+**Display maths needs the fences on their own lines.** A `$$` run that shares a
+line with its body is inline maths, exactly as Markdown treats a paragraph
+continuation:
+
+```markdown
+$$x = 1$$          <!-- inline -->
+
+$$                 <!-- display, centred -->
+x = 1
+$$
+```
+
+Three things worth knowing:
+
+- **It costs a stylesheet and fonts.** Turning it on adds about 8 KB gzipped to
+  the shared CSS and ships KaTeX's font files — the theme otherwise declares no
+  webfonts at all. The fonts themselves are fetched only on pages that contain a
+  formula, and only the subsets those formulas use.
+- **It takes over `markdown.processor`.** Astro 7 runs Sätteri by default and
+  offers no way to extend the default instance, so enabling maths means setting
+  `processor: satteri({ features: { math: true }, hastPlugins: [katex] })`. A
+  `markdown.processor` you configured yourself would be replaced by that call.
+- **KaTeX is a real dependency**, not a peer, so a site that leaves maths off
+  still installs it — the flag governs the output, not the install.
 
 ### Code highlighting
 
@@ -359,9 +390,10 @@ through the `text-hover-ink`, `bg-hover-surface`, `border-hover-line` and
 
 ### Fonts
 
-The theme loads **no webfont**. Latin comes from the platform UI font and CJK
-from the families listed explicitly in the stack, so a Chinese setup does not
-depend on the browser's last-resort font (which differs per OS):
+The theme loads **no webfont** — with one opt-in exception: `math: true` brings
+KaTeX's own faces for formula glyphs. Latin text comes from the platform UI font
+and CJK from the families listed explicitly in the stack, so a Chinese setup does
+not depend on the browser's last-resort font (which differs per OS):
 
 ```css
 --lumen-font-sans: var(--lumen-font-sans-override, ui-sans-serif), system-ui,

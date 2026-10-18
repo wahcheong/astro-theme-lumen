@@ -4,7 +4,7 @@ import lumen from "astro-theme-lumen";
 
 export default defineConfig({
   site: "https://lumen.example.com/",
-  integrations: [lumen()],
+  integrations: [lumen({ math: true })],
   vite: {
     plugins: [tailwindcss()],
   },
