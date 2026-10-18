@@ -48,6 +48,7 @@ export const DEFAULT_CONFIG: Omit<ResolvedLumenConfig, "routes"> = {
     { name: "mail", url: "mailto:?body=" },
   ],
   nav: [
+    { label: "Home", href: "/", icon: "house" },
     { label: "Posts", href: "/posts", icon: "book-open" },
     { label: "Tags", href: "/tags", icon: "tag" },
     { label: "Archives", href: "/archives", icon: "calendar" },
